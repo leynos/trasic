@@ -6,6 +6,8 @@ name: CI
     types: [opened, synchronize, reopened]
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   build-test:
     runs-on: ubuntu-latest

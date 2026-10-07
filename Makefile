@@ -8,7 +8,7 @@ MDTABLEFIX_SELECT = --git --include-untracked
 MDTABLEFIX_RULES = --wrap --renumber --breaks --ellipsis --fences
 
 .PHONY: help all clean test act-validation act-contract-smoke whitaker-driver-integration build release package coverage \
-  lint lint-clippy lint-whitaker fmt check-fmt markdownlint spelling nixie \
+  lint lint-clippy lint-whitaker typecheck fmt check-fmt markdownlint spelling nixie \
   audit rust-audit install-build-tools check-build-tools check-coverage-tools
 
 SHELL := bash

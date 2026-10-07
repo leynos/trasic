@@ -3,13 +3,15 @@ from __future__ import annotations
 
 import copy
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import call, patch
 
 import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from whitaker_capability import probe_manifest
+from whitaker_capability import Scenario, environment, probe_manifest
 
 MANIFEST = yaml.safe_load((Path(__file__).parent / 'fixtures' / 'whitaker' / 'current.yml').read_text())
 
@@ -123,3 +125,30 @@ class CapabilityMutationTests(unittest.TestCase):
         step['run'] += '\ncurl https://fixture.invalid\n'
         with self.assertRaisesRegex(ValueError, 'network/build'):
             probe_manifest(changed)
+
+
+class UtilityResolutionTests(unittest.TestCase):
+    """Probe tools resolve from trusted fixed paths while the child stays isolated."""
+
+    def test_bin_only_utilities_preserve_controlled_child_path(self):
+        """Mock a split /usr layout without changing the test process's environment."""
+        commands = ('mkdir', 'tr', 'tee', 'cat', 'grep', 'touch')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with patch('whitaker_capability.shutil.which') as which:
+                which.side_effect = lambda command, *, path: '/bin/' + command
+                child = environment(root, {'installer-version': '0.2.9'}, Scenario())
+            self.assertEqual(which.call_args_list,
+                             [call(command, path='/usr/bin:/bin') for command in commands])
+            self.assertEqual(child['PATH'], str(root / 'utilities'))
+            for command in commands:
+                self.assertEqual((root / 'utilities' / command).readlink(), Path('/bin') / command)
+            self.assertNotIn('/usr/bin', child['PATH'])
+
+    def test_missing_trusted_utility_fails_closed(self):
+        """No ambient executable is substituted when fixed-path resolution fails."""
+        with tempfile.TemporaryDirectory() as directory:
+            with patch('whitaker_capability.shutil.which', return_value=None) as which:
+                with self.assertRaisesRegex(ValueError, 'probe utility unavailable: mkdir'):
+                    environment(Path(directory), {'installer-version': '0.2.9'}, Scenario())
+            which.assert_called_once_with('mkdir', path='/usr/bin:/bin')

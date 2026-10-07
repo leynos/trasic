@@ -24,6 +24,14 @@ fn hosted_gate_and_manual_act_have_distinct_routes() {
 fn workflow_mutations_break_the_contract() {
     for (reason, changed) in [
         (
+            "missing workflow permission floor",
+            CI_WORKFLOW.replace("permissions: {}\n", ""),
+        ),
+        (
+            "broad workflow permission floor",
+            CI_WORKFLOW.replace("permissions: {}", "permissions: write-all"),
+        ),
+        (
             "wrong Make goal",
             CI_WORKFLOW.replace("          make lint", "          make typecheck"),
         ),

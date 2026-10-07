@@ -112,3 +112,48 @@ fn unpublished_workspace_rejects_packaging_before_external_build_commands() {
         "unsupported packaging must not invoke Cargo build operations or build preflight",
     );
 }
+
+/// A file called `typecheck` must not suppress its explicit action target.
+#[test]
+fn typecheck_runs_when_a_same_named_file_exists() {
+    let probe = CargoProbe::new().expect("create isolated command fixtures");
+    probe
+        .directory
+        .write("typecheck", "existing file")
+        .expect("create the target collision");
+    let makefile = Utf8Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../..")).join("Makefile");
+    // Skipping the phony preflight isolates typecheck's own phony declaration:
+    // a phony prerequisite would otherwise force a non-phony target to rerun.
+    let output = Command::new("make")
+        .args([
+            "--no-print-directory",
+            "-f",
+            makefile.as_str(),
+            "-o",
+            "check-build-tools",
+            "typecheck",
+        ])
+        .arg(format!("CARGO={}", probe.path.join("probe-cargo")))
+        .current_dir(&probe.path)
+        .env("CARGO_LOG", probe.path.join("cargo.log").as_str())
+        .env_remove("MAKEFLAGS")
+        .env_remove("MFLAGS")
+        .env_remove("MAKEOVERRIDES")
+        .output()
+        .expect("execute typecheck without force-rebuild options");
+    assert!(
+        output.status.success(),
+        "typecheck must run despite its file collision: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let calls = probe
+        .directory
+        .read_to_string("cargo.log")
+        .expect("the typecheck recipe must invoke Cargo");
+    assert!(
+        calls
+            .lines()
+            .any(|line| line == "check --workspace --all-targets --all-features"),
+        "typecheck must run its exact workspace check even when a same-named file exists: {calls}"
+    );
+}

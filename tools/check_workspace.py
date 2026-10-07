@@ -63,11 +63,12 @@ def dependency_edges(manifest: dict, shared: dict, names: set[str]) -> set[str]:
 
 
 def check_graph(graph: dict[str, set[str]]) -> None:
-    """Reject cycles even if both the model and manifests drift together."""
+    """Reject dangling edges and cycles, even if model and manifests drift together."""
     visiting: set[str] = set()
     visited: set[str] = set()
 
     def visit(name: str) -> None:
+        require(name in graph, f'Cargo dependency graph has unknown dependency {name}')
         require(name not in visiting, f'Cargo dependency cycle through {name}')
         if name in visited:
             return

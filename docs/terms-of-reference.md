@@ -231,7 +231,7 @@ integration mechanisms and upstream enhancements testable rather than sacred.
 
 The inspected Combobulate and Statelet integration proposals are not released
 capabilities. Their current documentary status belongs in every adoption plan.
-[ B1, B2, S1, S2]
+See B1, B2, S1, and S2 in the [reference register](references.md).
 
 ## 9. Open questions
 

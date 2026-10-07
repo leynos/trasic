@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import dataclasses
 import os
+import shutil
 import signal
 import subprocess
 import tempfile
@@ -91,8 +92,8 @@ def environment(root: Path, values: dict, scenario: Scenario) -> dict[str, str]:
     tools = root / 'utilities'
     tools.mkdir()
     for command in ('mkdir', 'tr', 'tee', 'cat', 'grep', 'touch'):
-        origin = Path('/usr/bin') / command
-        require(origin.is_file(), f'probe utility unavailable: {origin}')
+        origin = shutil.which(command, path='/usr/bin:/bin')
+        require(origin is not None, f'probe utility unavailable: {command}')
         (tools / command).symlink_to(origin)
     for command in ('curl', 'wget', 'git', 'cargo', 'rustup', 'python', 'python3', 'node', 'uv'):
         executable(tools / command, DENIED_EXECUTOR)

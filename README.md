@@ -31,7 +31,7 @@ make all
 
 `make all` runs formatting checks, linting, tests, and spelling sequentially.
 `make design-check` checks the imported documentation models, the actual
-workspace manifests, and Python tooling tests. Neither command runs a hgpovray
+workspace manifests, and Python tooling tests. Neither command runs an hgpovray
 oracle or establishes rendering correctness.
 
 ## Read the design

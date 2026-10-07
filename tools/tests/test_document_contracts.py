@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -24,9 +25,49 @@ class DesignContracts(unittest.TestCase):
         shutil.copytree(checker.ROOT / 'docs', self.root / 'docs')
         for filename in ('README.md', 'AGENTS.md', 'LICENSE'):
             shutil.copy2(checker.ROOT / filename, self.root / filename)
+        (self.root / 'tools').mkdir()
+        shutil.copy2(Path(checker.__file__), self.root / 'tools/validate_docs.py')
         self.patch = patch.object(checker, 'ROOT', self.root)
         self.patch.start()
         self.addCleanup(self.patch.stop)
+
+    def run_cli(self):
+        """Run the copied real entry point against this isolated documentation pack."""
+        return subprocess.run(
+            [sys.executable, str(self.root / 'tools/validate_docs.py')],
+            cwd=self.root, text=True, capture_output=True, check=False,
+        )
+
+    def test_cli_accepts_unmodified_pack(self):
+        """The positive control runs every checker through the actual CLI boundary."""
+        result = self.run_cli()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stderr, '')
+        report = json.loads(result.stdout)
+        self.assertEqual(report['status'], 'passed')
+        self.assertEqual(report['counts']['schema_controls'], 5)
+
+    def test_cli_reports_invalid_schema_and_example_without_traceback(self):
+        """Schema and instance errors follow the same failure boundary as other checks."""
+        for filename, field, value in (
+            ('oracle-envelope.schema.json', 'type', 42),
+            ('oracle-envelope.example.json', 'status', 'invented'),
+        ):
+            with self.subTest(filename=filename):
+                path = self.root / 'spec' / filename
+                original = path.read_text()
+                value_json = json.loads(original)
+                value_json[field] = value
+                path.write_text(json.dumps(value_json))
+                try:
+                    result = self.run_cli()
+                finally:
+                    path.write_text(original)
+                self.assertEqual(result.returncode, 1, result.stderr)
+                self.assertEqual(result.stdout, '')
+                self.assertTrue(result.stderr.startswith('Document validation failed: '),
+                                result.stderr)
+                self.assertNotIn('Traceback', result.stderr)
 
     def test_unmodified_reader_links_pass(self):
         self.assertGreater(checker.check_markdown()['relative_links'], 0)

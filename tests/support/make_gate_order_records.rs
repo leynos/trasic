@@ -229,3 +229,8 @@ const ENVIRONMENT_NAMES: &[&str] = &[
     "ACT",
     "TYPOS_CONFIG_BUILDER",
 ];
+
+/// Generative protocol contracts beside the private byte-oriented parser.
+#[cfg(test)]
+#[path = "make_gate_order_property_tests.rs"]
+mod property_tests;

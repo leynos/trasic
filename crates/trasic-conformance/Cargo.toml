@@ -21,6 +21,7 @@ trasic-render.workspace = true
 [dev-dependencies]
 camino.workspace = true
 cap-std.workspace = true
+proptest.workspace = true
 rstest.workspace = true
 serde.workspace = true
 serde_yaml.workspace = true

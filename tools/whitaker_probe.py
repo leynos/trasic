@@ -8,6 +8,7 @@ fake executors. Complete content approval precedes the selected boundary probes.
 from __future__ import annotations
 
 import argparse
+from collections.abc import Callable
 import hashlib
 import json
 import re
@@ -15,7 +16,6 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
-from typing import Callable
 
 import yaml
 

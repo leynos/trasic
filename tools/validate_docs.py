@@ -17,7 +17,7 @@ from typing import Any
 from urllib.parse import unquote, urlsplit
 
 try:
-    from jsonschema import Draft202012Validator
+    from jsonschema import Draft202012Validator, SchemaError, ValidationError
     from markdown_it import MarkdownIt
 except ImportError as exc:
     raise SystemExit(
@@ -247,7 +247,8 @@ def main() -> int:
     args = parser.parse_args()
     try:
         report = run()
-    except (CheckFailure, OSError, ValueError, KeyError, TypeError) as exc:
+    except (CheckFailure, OSError, ValueError, KeyError, TypeError,
+            SchemaError, ValidationError) as exc:
         print(f'Document validation failed: {exc}', file=sys.stderr)
         return 1
     print(json.dumps(report, indent=2))

@@ -64,6 +64,47 @@ The alternative is `cargo install --locked mdtablefix@0.6.0`. Install
 `npm install --global markdownlint-cli2`. Tool installation and first builds
 may acquire dependencies; no product scene execution occurs during setup.
 
+### 2.1. Prepare optional integration and diagram tools
+
+Act and Docker are required only for `make act-validation`,
+`make test WITH_ACT=1`, and `make act-contract-smoke`. Ordinary `make all` and
+`make design-check` do not need them. The manual
+[Act validation workflow](../.github/workflows/act-validation.yml) pins Act
+v0.2.89, verifies the Linux x86_64 release archive's SHA-256 digest before
+installing it, and checks the hosted runner's Docker runtime with
+`docker info`. It does not pin a Docker version.
+
+For the local integration route, install the platform-appropriate executable
+from the
+[Act v0.2.89 release](https://github.com/nektos/act/releases/tag/v0.2.89) and
+add it to `PATH`. Follow the
+[official Act installation guide](https://nektosact.com/installation/) and
+[Docker Engine installation guide](https://docs.docker.com/engine/install/) for
+the container runtime. Start the Docker daemon and confirm `docker info`
+succeeds before invoking the integration target. Make defaults to
+`catthehacker/ubuntu:act-latest`; `ACT` and `ACT_RUNNER_IMAGE` select
+alternative executables and runner images. A local integration result does not
+establish hosted-runner parity.
+
+Nixie and a Mermaid renderer are required for the separate `make nixie` route
+when editing diagrams, including those in inherited engineering references.
+They are not prerequisites for `make all` or `make design-check`; the current
+hosted CI and design workflows neither install nor run them. Install the
+`nixie` executable with Python 3.14 or later and a renderer as described in the
+[upstream Nixie requirements](https://github.com/leynos/nixie#requirements).
+For the headless Rust renderer route:
+
+```bash
+uv tool install --python 3.14 nixie-cli
+cargo install merman-cli
+make nixie
+```
+
+An upstream Merman release binary can replace the Cargo installation. Nixie
+also supports Node.js or Bun with the official Mermaid CLI. `NIXIE` selects
+another compatible executable. Make passes `--no-sandbox`, which affects the
+Chromium renderer and is inert with Merman.
+
 ## 3. Run the quality gates
 
 The Makefile owns executable gate policy. Run the applicable gates before
@@ -116,6 +157,12 @@ group command identity, path expectations, and step settings for their named
 assertions. They remain private to the Make/Whitaker/Act contract suites and
 must not become production configuration types or shared runtime interfaces.
 
+Generative Rust tests exercise the fixture record parsers. Act accepts a
+complete final record without a terminal NUL delimiter; Make gate records
+require that final delimiter. Both parsers reject incomplete records. These
+parsers and their property-test helpers belong only to their infrastructure
+suites; they do not define a production protocol or shared runtime API.
+
 Use `BUILD_JOBS` to retain the existing concurrency budget, for example
 `make test BUILD_JOBS=-j2`. Preserve inherited cache, runner, and concurrency
 limits when changing workflows. Avoid launching expensive reference builds or
@@ -160,6 +207,14 @@ inherited policy, and explicit infrastructure-test registration. Its controls
 must reject representative weakened manifests rather than merely restating the
 happy path. The Python suite also retains the imported Whitaker capability
 probe tests and documentation controls.
+
+`tools/tests/test_graph_properties.py` exhaustively enumerates all 531 directed
+graphs on zero to three nodes, including self-loops, and compares both
+validators' acyclicity checks with an independent sink-elimination oracle.
+Separate dangling-edge controls check unknown dependencies. The enumeration
+establishes agreement only within that finite domain, not a proof of unbounded
+graph correctness. Its graph generator and oracle are pure, suite-local test
+helpers; neither validator nor product code may depend on them.
 
 `make design-check` runs both validators and Python unittest discovery. It
 checks no Combobulate design generators or semantic-model fixtures: those

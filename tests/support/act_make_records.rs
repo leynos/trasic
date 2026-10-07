@@ -177,3 +177,8 @@ impl<'a> RecordCursor<'a> {
 #[cfg(test)]
 #[path = "act_make_parser_tests.rs"]
 mod parser_tests;
+
+/// Generative contracts complementing the fixed parser regression cases.
+#[cfg(test)]
+#[path = "act_make_property_tests.rs"]
+mod property_tests;

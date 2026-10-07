@@ -258,6 +258,9 @@ fn valid_ci_order(ci: &Value, steps: &[Value]) -> bool {
         .iter()
         .zip(expected_order)
         .all(|(item, name)| text(item, &["name"]) == name)
+        && at(ci, &["permissions"])
+            .and_then(Value::as_mapping)
+            .is_some_and(serde_yaml::Mapping::is_empty)
         && text(ci, &["jobs", "build-test", "permissions", "contents"]) == Some("read")
         && steps
             .iter()

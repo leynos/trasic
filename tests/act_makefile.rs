@@ -1,5 +1,9 @@
 //! Behavioural tests for the Makefile's outer Cargo and nested Act sequence.
 
+/// Pure property-test strategies and framing shared by the two recorder protocols.
+#[path = "support/nul_record_properties.rs"]
+mod property_fields;
+
 /// Canonical workspace path shared by command recording and assertions.
 #[path = "support/repository_root.rs"]
 mod repository_root;
