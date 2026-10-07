@@ -3,6 +3,10 @@
 #[path = "support/make_target_option_tests.rs"]
 mod target_options;
 
+/// Release and unavailable-packaging contracts for the bootstrap workspace.
+#[path = "support/make_production_routes.rs"]
+mod production_routes;
+
 use std::{
     error::Error,
     io,
@@ -133,7 +137,6 @@ fn every_make_cargo_route_uses_the_selected_executable() {
     for (target, calls) in [
         ("build", &["build"][..]),
         ("release", &["build"][..]),
-        ("package", &["package"][..]),
         ("lint", &["doc", "clippy"][..]),
         ("typecheck", &["check"][..]),
         ("coverage", &["llvm-cov"][..]),
@@ -154,78 +157,6 @@ fn every_make_cargo_route_uses_the_selected_executable() {
             !has_bare_cargo(&commands),
             "make {target} must not use bare Cargo: {commands}"
         );
-    }
-}
-
-/// Production routes must replace even hostile inherited development settings.
-#[test]
-fn release_and_package_select_llvm_without_development_flags() {
-    let probe = CargoProbe::new().expect("create an isolated fake Cargo executable");
-    for (target, expected_command) in [
-        ("release", "build --workspace --release"),
-        ("package", "package --locked --workspace"),
-    ] {
-        let output = Command::new("make")
-            .arg(target)
-            .arg(format!("CARGO={}", probe.path.join("probe-cargo")))
-            .current_dir(Utf8Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../..")))
-            .env("CARGO_LOG", probe.path.join("cargo.log").as_str())
-            .env("PRODUCTION_LOG", probe.path.join("production.log").as_str())
-            .env("RUSTFLAGS", "-Zthreads=8 -C link-arg=-fuse-ld=mold")
-            .env("CARGO_ENCODED_RUSTFLAGS", "-Zthreads=8")
-            .env("CARGO_PROFILE_DEV_CODEGEN_BACKEND", "cranelift")
-            .env("CARGO_PROFILE_RELEASE_CODEGEN_BACKEND", "cranelift")
-            .env(
-                "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER",
-                "other-linker",
-            )
-            .output()
-            .expect("execute a production Make target with fake Cargo");
-        assert!(
-            output.status.success(),
-            "make {target} must reach fake Cargo: {}",
-            String::from_utf8_lossy(&output.stderr)
-        );
-        let calls = probe
-            .directory
-            .read_to_string("cargo.log")
-            .expect("read the selected Cargo command");
-        assert!(
-            calls.contains(expected_command),
-            "make {target} must execute {expected_command}: {calls}"
-        );
-        let environment = probe
-            .directory
-            .read_to_string("production.log")
-            .expect("read the production Cargo environment");
-        for required in [
-            "CARGO_PROFILE_DEV_CODEGEN_BACKEND=llvm",
-            "CARGO_PROFILE_RELEASE_CODEGEN_BACKEND=llvm",
-            "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=clang",
-        ] {
-            assert!(
-                environment.lines().any(|line| line == required),
-                "make {target} must select {required}: {environment}"
-            );
-        }
-        let rustflags = environment
-            .lines()
-            .find(|line| line.starts_with("RUSTFLAGS="))
-            .expect("production Cargo must receive explicit RUSTFLAGS");
-        assert!(
-            rustflags.contains("-D warnings")
-                && !rustflags.contains("-Zthreads=8")
-                && !rustflags.contains("-fuse-ld=mold"),
-            "make {target} must replace inherited development flags: {rustflags}"
-        );
-        assert!(
-            !environment.contains("CARGO_ENCODED_RUSTFLAGS="),
-            "make {target} must remove the encoded flags override: {environment}"
-        );
-        probe
-            .directory
-            .remove_file("cargo.log")
-            .expect("reset the Cargo command log");
     }
 }
 

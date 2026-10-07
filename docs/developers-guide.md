@@ -88,7 +88,7 @@ make all
 | `make all`          | Run formatting checks, linting, tests, and spelling sequentially, including under parallel Make. |
 | `make release`      | Build the workspace release profile through the explicit LLVM route.                             |
 | `make coverage`     | Measure workspace coverage through LLVM and `lld`.                                               |
-| `make package`      | Invoke the inherited LLVM packaging route; unpublished members are skipped.                      |
+| `make package`      | Fail early: packaging is unavailable for the unpublished bootstrap workspace.                    |
 | `make audit`        | Audit the workspace lockfile using Cargo Audit.                                                  |
 
 _Table 1: Bootstrap gate scope; no gate establishes product conformance._
@@ -130,13 +130,22 @@ flags, so Make restates development flags and retains caller flags for its
 development recipes. Preflight rejects a non-Cranelift development backend
 override.
 
-`make release` and `make package` explicitly select LLVM for both dev and
-release profiles and use production flags. Direct `cargo build --release` and
-`cargo package` inherit development configuration and are not the production
-routes. `make coverage` selects LLVM and `lld` with coverage-specific flags.
-All eight packages set `publish = false`; packaging skips them and produces no
-release-readiness evidence. The manifest/workflow contract tests hold these
-routes independently of compiler execution.
+`make release` explicitly selects LLVM for both dev and release profiles,
+including release host and build-script units, and uses production flags. Use
+this target for LLVM build verification. Direct `cargo build --release`
+inherits development configuration and is not the production route.
+`make coverage` selects LLVM and `lld` with coverage-specific flags. The
+manifest/workflow contract tests hold these routes independently of compiler
+execution.
+
+All eight packages set `publish = false`, which prohibits publication but does
+not make `cargo package --workspace` skip them. With the pinned Cargo version,
+that command packaged private leaf crates before failing when an evaluator
+dependency could not resolve from the registry. The bootstrap therefore makes
+`make package` fail before invoking Cargo, with a diagnostic that packaging is
+unavailable for the unpublished bootstrap workspace. Packaging support needs a
+separate reviewed dependency and distribution policy; `make release` provides
+the current LLVM build-verification route.
 
 ## 5. Maintain documentation and workspace checks
 

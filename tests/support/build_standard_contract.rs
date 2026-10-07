@@ -21,7 +21,7 @@ const DEVELOPMENT_TARGETS: [&str; 5] = ["test", "typecheck", "lint", "build", "a
 
 /// Makefile targets that measure or ship, so every command assigns
 /// `RUSTFLAGS` and none carries a standard flag.
-pub(super) const HELD_OUT_TARGETS: [&str; 3] = ["coverage", "release", "package"];
+pub(super) const HELD_OUT_TARGETS: [&str; 2] = ["coverage", "release"];
 
 /// Development targets that must assign `RUSTFLAGS` in at least one command,
 /// so the restatement checks above cannot pass by finding nothing to check.

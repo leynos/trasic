@@ -147,15 +147,18 @@ project:
   `.cargo/config.toml`; native x86_64 GNU Linux builds use the repository's
   Clang wrapper to select pinned `mold` ahead of the system linker. Make
   targets that assign `RUSTFLAGS` restate the development flags because Cargo
-  does not merge them with its configuration. Use `make release` and
-  `make package` for production artefacts; both set their own flags and select
-  LLVM for the dev and release profiles because package verification uses the
-  dev profile. Measured coverage also selects LLVM. These routes exclude the
-  parallel frontend, Cranelift, and `mold`. Coverage uses lld. Development Make
-  gates reject a non-Cranelift `CARGO_PROFILE_DEV_CODEGEN_BACKEND` override.
-  Cross-target Make builds, x86_64 Linux musl, and encoded Rust flags are
-  unsupported for the `mold` route; native linker overrides must select the
-  repository's Clang wrapper.
+  does not merge them with its configuration. Use `make release` for LLVM build
+  verification; it sets its own flags and selects LLVM for the dev and release
+  profiles, including release host and build-script units. `make package` fails
+  early because packaging is unavailable for this unpublished bootstrap
+  workspace. `publish = false` prohibits publication, but does not prevent
+  Cargo from attempting to package members. Measured coverage also selects
+  LLVM. The release and coverage routes exclude the parallel frontend,
+  Cranelift, and `mold`. Coverage uses lld. Development Make gates reject a
+  non-Cranelift `CARGO_PROFILE_DEV_CODEGEN_BACKEND` override. Cross-target Make
+  builds, x86_64 Linux musl, and encoded Rust flags are unsupported for the
+  `mold` route; native linker overrides must select the repository's Clang
+  wrapper.
 - Run `make check-fmt`, `make lint`, and `make test` before committing. These
   targets wrap the following commands, so contributors understand the exact
   behaviour and policy enforced:

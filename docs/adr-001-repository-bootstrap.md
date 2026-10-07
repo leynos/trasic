@@ -67,10 +67,15 @@ must add executable implementation evidence and update the relevant guides. The
 imported roadmap remains a proposal with planned tasks; this ADR does not mark
 those tasks complete or ratify their product decisions.
 
-All packages remain unpublished. `make package` retains the inherited LLVM
-packaging route, but `cargo package --workspace` respects `publish = false` and
-skips these members. It is not a release-readiness or archive-verification gate
-for this scaffold.
+All packages remain unpublished. `publish = false` prohibits publication, but
+does not make the pinned Cargo version skip packaging members: the inherited
+`cargo package --workspace` route packaged private leaf crates before failing
+to resolve an evaluator dependency from the registry. `make package` therefore
+fails early with an explicit diagnostic that packaging is unavailable for the
+unpublished bootstrap workspace. Use `make release` for LLVM build
+verification. Packaging requires a separate reviewed dependency and
+distribution policy; this scaffold supplies no archive-verification or
+release-readiness gate.
 
 An owner must configure any CodeScene environment, branch protection, token,
 and project before enabling external publication. Copying workflow source does

@@ -31,7 +31,7 @@ RUST_FLAGS := -D warnings $(RUST_FLAGS)
 # the parallel frontend, and the x86_64 GNU Linux source adds `mold`. Assigning `RUSTFLAGS`
 # replaces those sources outright, so the gate targets restate the flags here.
 # Development recipes add those flags to inherited RUSTFLAGS, including the CI
-# setup-rust value. Coverage, release, and packaging take neither. The checked toolchain
+# setup-rust value. Coverage and release take neither. The checked toolchain
 # components come from rust-toolchain.toml. Native Cargo routes through the
 # Clang wrapper, which puts pinned ld.mold first; coverage checks its lld linker.
 DEV_THREADS_FLAGS ?= -Zthreads=8
@@ -42,7 +42,6 @@ BUILD_HOST_TRIPLE := $(shell rustup show 2>/dev/null | sed -n 's/^Default host: 
 DEV_LINKER_FLAGS ?= $(if $(and $(filter Linux,$(BUILD_HOST_OS)),$(filter x86_64,$(BUILD_HOST_ARCH)),$(filter x86_64-unknown-linux-gnu,$(BUILD_HOST_TRIPLE))),-C link-arg=-fuse-ld=mold)
 DEV_RUST_FLAGS ?= $(RUST_FLAGS) $(POLONIUS_FLAGS) $(DEV_THREADS_FLAGS) $(DEV_LINKER_FLAGS)
 RELEASE_RUST_FLAGS ?= $(RUST_FLAGS) $(POLONIUS_FLAGS)
-PACKAGE_FLAGS ?=
 RUSTDOC_FLAGS ?=
 RUSTDOC_FLAGS := --cfg docsrs -D warnings $(POLONIUS_FLAGS) $(RUSTDOC_FLAGS)
 CARGO_FLAGS ?= --workspace --all-targets --all-features
@@ -69,8 +68,10 @@ build: target/debug/$(TARGET) ## Build debug binary
 release: ## Build the production release artefact with LLVM and the platform linker
 	$(PRODUCTION_ENV) $(CARGO) build --workspace $(BUILD_JOBS) --release
 
-package: ## Build and verify a publishable Cargo package with LLVM
-	$(PRODUCTION_ENV) $(CARGO) package --locked --workspace $(PACKAGE_FLAGS)
+package: ## Explain why packaging is unavailable for the bootstrap workspace
+	@printf '%s\n' \
+		'Packaging is unavailable for the unpublished bootstrap workspace; use make release to verify the LLVM build.' >&2
+	@exit 1
 
 all: ## Perform every commit gate sequentially, even with make -j
 	+$(MAKE) check-fmt
@@ -108,10 +109,10 @@ whitaker-driver-integration: ## Check cold then warm Dylint driver construction
 target/debug/$(TARGET): check-build-tools ## Build debug binary
 	RUSTFLAGS="$${RUSTFLAGS:+$$RUSTFLAGS }$(DEV_RUST_FLAGS)" $(CARGO) build --workspace $(BUILD_JOBS)
 
-# Cargo packages the repository config and verifies with the dev profile. Both
-# profiles therefore select LLVM; the native linker override bypasses the
-# development wrapper even for release host/build-script units. An inherited
-# encoded flags value would outrank RUSTFLAGS, so remove it explicitly.
+# Release builds include host and build-script units as well as release-profile
+# artefacts. Both profiles select LLVM; the native linker override bypasses the
+# development wrapper throughout that build. An inherited encoded flags value
+# would outrank RUSTFLAGS, so remove it explicitly.
 PRODUCTION_ENV = env -u CARGO_ENCODED_RUSTFLAGS CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=clang CARGO_PROFILE_DEV_CODEGEN_BACKEND=llvm CARGO_PROFILE_RELEASE_CODEGEN_BACKEND=llvm RUSTFLAGS="$(RELEASE_RUST_FLAGS)"
 
 coverage: check-coverage-tools ## Generate lcov coverage with lld for llvm-tools compatibility

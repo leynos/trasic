@@ -6,7 +6,7 @@
 //! than merging them, and an assigned `RUSTFLAGS` replaces every source. So the
 //! flags must be repeated in each configuration source, restated wherever the
 //! Makefile assigns `RUSTFLAGS` for a development target, and kept out of the
-//! coverage, release, and packaging recipes, which measure or ship and so stay on the
+//! coverage and release recipes, which measure or ship and so stay on the
 //! default flags.
 //!
 //! The Makefile clauses run `make -n` and read the commands it would run,
@@ -219,11 +219,11 @@ fn make_does_not_inject_mold_for_a_musl_host() {
     );
 }
 
-/// Coverage measures and release/packaging ship, so they stay on production flags.
+/// Coverage measures and release ships, so they stay on production flags.
 /// Every command must assign `RUSTFLAGS`, since only an assignment displaces
 /// the configuration's sources.
 #[test]
-fn coverage_release_and_package_take_neither_flag() {
+fn coverage_and_release_take_neither_flag() {
     for target in HELD_OUT_TARGETS {
         for assigned in make_rustflags(target, Host::Linux, None).expect("read `make -n` output") {
             let flags = assigned.unwrap_or_else(|| {
