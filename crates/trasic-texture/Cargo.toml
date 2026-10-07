@@ -1,0 +1,14 @@
+[package]
+name = "trasic-texture"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Texture preparation and point/context sampling with explicit resource bindings."
+
+[lints]
+workspace = true
+
+[dependencies]
+trasic-scene.workspace = true

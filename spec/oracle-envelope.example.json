@@ -1,0 +1,26 @@
+{
+  "schema_version": "trasic.oracle-envelope/0.1",
+  "status": "draft",
+  "profile_id": "proposed-minimal-scene",
+  "reference": {
+    "repository": "LeForgeron/povray",
+    "commit": null,
+    "build_manifest_sha256": null
+  },
+  "exporter": {
+    "patch_sha256": null,
+    "checkpoint": "conceptual-scene-v1",
+    "schema_sha256": null
+  },
+  "inputs": [],
+  "coverage": [
+    {
+      "feature": "sphere",
+      "state": "partial"
+    }
+  ],
+  "payload": {
+    "kind": "conceptual-scene",
+    "note": "Illustrative envelope only; no reference renderer has produced this payload."
+  }
+}

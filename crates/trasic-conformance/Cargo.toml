@@ -1,0 +1,87 @@
+[package]
+name = "trasic-conformance"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Development-only reference-process adapters, fixture manifests, canonical comparison, and evidence bundles."
+
+[lints]
+workspace = true
+
+[dependencies]
+trasic-sdl.workspace = true
+trasic-eval.workspace = true
+trasic-scene.workspace = true
+trasic-geometry.workspace = true
+trasic-texture.workspace = true
+trasic-render.workspace = true
+
+[dev-dependencies]
+camino.workspace = true
+cap-std.workspace = true
+rstest.workspace = true
+serde.workspace = true
+serde_yaml.workspace = true
+toml.workspace = true
+
+[[test]]
+name = "act_fallback"
+path = "../../tests/act_fallback.rs"
+
+[[test]]
+name = "act_makefile"
+path = "../../tests/act_makefile.rs"
+
+[[test]]
+name = "act_workflow"
+path = "../../tests/act_workflow.rs"
+
+[[test]]
+name = "build_standard_contract"
+path = "../../tests/build_standard_contract.rs"
+
+[[test]]
+name = "build_tool_workflows"
+path = "../../tests/build_tool_workflows.rs"
+
+[[test]]
+name = "build_toolchain_contract"
+path = "../../tests/build_toolchain_contract.rs"
+
+[[test]]
+name = "build_tools_installer"
+path = "../../tests/build_tools_installer.rs"
+
+[[test]]
+name = "build_tools_preflight"
+path = "../../tests/build_tools_preflight.rs"
+
+[[test]]
+name = "codescene_publisher"
+path = "../../tests/codescene_publisher.rs"
+
+[[test]]
+name = "coverage_backend_workflows"
+path = "../../tests/coverage_backend_workflows.rs"
+
+[[test]]
+name = "make_cargo_routes"
+path = "../../tests/make_cargo_routes.rs"
+
+[[test]]
+name = "make_gate_order"
+path = "../../tests/make_gate_order.rs"
+
+[[test]]
+name = "markdown_wiring"
+path = "../../tests/markdown_wiring.rs"
+
+[[test]]
+name = "native_clang_wrapper"
+path = "../../tests/native_clang_wrapper.rs"
+
+[[test]]
+name = "whitaker_workflow"
+path = "../../tests/whitaker_workflow.rs"

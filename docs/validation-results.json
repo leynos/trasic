@@ -1,0 +1,55 @@
+{
+  "status": "passed",
+  "scope": "supplementary_documentation_checks_only",
+  "checks": [
+    {
+      "name": "Architecture model and acyclic package graph",
+      "status": "passed"
+    },
+    {
+      "name": "Roadmap hierarchy, dependencies, prose agreement, and coverage",
+      "status": "passed"
+    },
+    {
+      "name": "Oracle-envelope schema and admission controls",
+      "status": "passed"
+    },
+    {
+      "name": "Markdown structure, typography, and local links",
+      "status": "passed"
+    }
+  ],
+  "counts": {
+    "crates": 8,
+    "requirements": 7,
+    "phases": 8,
+    "steps": 24,
+    "tasks": 66,
+    "primary_design_sections": 15,
+    "goals": 6,
+    "schema_controls": 5,
+    "markdown_documents": 7,
+    "relative_links": 14
+  },
+  "sha256": {
+    "README.md": "91483f36e5f8f37f679ac1045c413eb31ac5ea0794abf425a3282e96f70f3e22",
+    "docs/context.md": "32b31de03480e83cea794e6973a57a8589c7805b6aa06976e6f0877514fc618c",
+    "docs/references.md": "e30a88bf85e49bdb1a434f7178f357e9f1f3873aace5c276c613de990bf702f8",
+    "docs/roadmap.md": "be5ae86ea9f5f077f229173faec7f06af54d211ce2ded712f604930e4a5d0680",
+    "docs/technical-design.md": "a40189bab900750361ea270f4f0240d660a2062f0db211d00ba54bbcad2da9c4",
+    "docs/terms-of-reference.md": "cc009a75b73a316cb279ff9b6190752764134ec1c91602cbd4ecf8f99d8c60c9",
+    "docs/validation.md": "193464e8ada7d77f15a36cc570335ed3c8b01ead3d858e058de7d017d9702cb3",
+    "spec/architecture.json": "3bb08809a37efef644bc161526676c1aef30cd6c706acb3dfdec05a154cb98bd",
+    "spec/oracle-envelope.example.json": "b78acf79a02c503cdc842cf16d06a676548d02bcab011fa39a58a2d3e90b3a79",
+    "spec/oracle-envelope.schema.json": "366ec7b09978cded5286fa776435bbc0fa513afafe5bbe7efdc30a2eb589b97f",
+    "spec/roadmap.json": "555ca3902c013364adca0e57692fe15b99343e28110aca410363c97031f1ec0e",
+    "tools/validate_docs.py": "c605816cd8c6e0f1528ea41aae2697798845240ad2a028fc64ff841a6da4217a"
+  },
+  "not_established": [
+    "Rust or C++ implementation correctness",
+    "Reference compatibility",
+    "Kani or Verus proof discharge",
+    "Benchmark or reviewer-study results",
+    "Repository CI gates"
+  ]
+}

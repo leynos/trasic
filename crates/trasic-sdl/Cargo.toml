@@ -1,0 +1,13 @@
+[package]
+name = "trasic-sdl"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Sources, tokens, spans, Logos adapter, syntax nodes, expression parsing, and neutral syntax/evaluation request types."
+
+[lints]
+workspace = true
+
+[dependencies]

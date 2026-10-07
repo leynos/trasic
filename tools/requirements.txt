@@ -1,0 +1,4 @@
+# Repository validation tools only. These are not Rust project dependencies.
+markdown-it-py>=3,<5
+jsonschema>=4,<5
+PyYAML==6.0.3

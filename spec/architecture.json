@@ -1,0 +1,157 @@
+{
+  "status": "proposed",
+  "revision": "0.1",
+  "date": "2026-10-07",
+  "crates": [
+    {
+      "name": "trasic-scene",
+      "depends_on": [],
+      "owns": "Validated conceptual scene descriptions, semantic IDs, domain value types, provenance references, and schema."
+    },
+    {
+      "name": "trasic-sdl",
+      "depends_on": [],
+      "owns": "Sources, tokens, spans, Logos adapter, syntax nodes, expression parsing, and neutral syntax/evaluation request types."
+    },
+    {
+      "name": "trasic-eval",
+      "depends_on": [
+        "trasic-sdl",
+        "trasic-scene"
+      ],
+      "owns": "Evaluation driver, scopes, expansion frames, language coercions, semantic lowering, and scene finalization."
+    },
+    {
+      "name": "trasic-geometry",
+      "depends_on": [
+        "trasic-scene"
+      ],
+      "owns": "Geometry preparation, intersections, inside queries, CSG event policy, and acceleration."
+    },
+    {
+      "name": "trasic-texture",
+      "depends_on": [
+        "trasic-scene"
+      ],
+      "owns": "Texture preparation and point/context sampling with explicit resource bindings."
+    },
+    {
+      "name": "trasic-render",
+      "depends_on": [
+        "trasic-scene",
+        "trasic-geometry",
+        "trasic-texture"
+      ],
+      "owns": "Camera rays, sampling, transport, reconstruction, tile scheduling, and film commits."
+    },
+    {
+      "name": "trasic-cli",
+      "depends_on": [
+        "trasic-sdl",
+        "trasic-eval",
+        "trasic-scene",
+        "trasic-geometry",
+        "trasic-texture",
+        "trasic-render"
+      ],
+      "owns": "Commands, configuration, filesystem adapters, budgets, output, and diagnostic presentation."
+    },
+    {
+      "name": "trasic-conformance",
+      "depends_on": [
+        "trasic-sdl",
+        "trasic-eval",
+        "trasic-scene",
+        "trasic-geometry",
+        "trasic-texture",
+        "trasic-render"
+      ],
+      "owns": "Development-only reference-process adapters, fixture manifests, canonical comparison, and evidence bundles."
+    }
+  ],
+  "external_rules": [
+    "Combobulate adapters live with the geometry/render consumers; Polars is not a dependency of scene or SDL.",
+    "Statelet observes explicit transitions owned by Trasic; it does not dispatch or validate them.",
+    "Neither upstream library takes a production dependency on Trasic.",
+    "A runtime-to-proc-macro edge must never combine with a reverse production edge.",
+    "The reference C++ process and conformance harness are not production-renderer dependencies."
+  ],
+  "requirements": [
+    {
+      "id": "R1",
+      "goal": "G1",
+      "design_sections": [
+        "2",
+        "4",
+        "5",
+        "6"
+      ],
+      "statement": "Reproduce the selected modern hgpovray scene semantics under an explicit profile."
+    },
+    {
+      "id": "R2",
+      "goal": "G2",
+      "design_sections": [
+        "3",
+        "7",
+        "8",
+        "9",
+        "13"
+      ],
+      "statement": "Validate language, geometry, texture, and rendering boundaries independently."
+    },
+    {
+      "id": "R3",
+      "goal": "G3",
+      "design_sections": [
+        "4",
+        "5",
+        "11"
+      ],
+      "statement": "Preserve source and expansion provenance in comprehensible diagnostics."
+    },
+    {
+      "id": "R4",
+      "goal": "G4",
+      "design_sections": [
+        "10",
+        "12",
+        "13"
+      ],
+      "statement": "Use and evolve Combobulate for legible, bounded domain composition."
+    },
+    {
+      "id": "R5",
+      "goal": "G4",
+      "design_sections": [
+        "11",
+        "12",
+        "13"
+      ],
+      "statement": "Use and evolve Statelet without transferring machine ownership."
+    },
+    {
+      "id": "R6",
+      "goal": "G5",
+      "design_sections": [
+        "2",
+        "9",
+        "12",
+        "14"
+      ],
+      "statement": "Make resource, numerical, compatibility, and partial-completion policies explicit."
+    },
+    {
+      "id": "R7",
+      "goal": "G6",
+      "design_sections": [
+        "1",
+        "12",
+        "13",
+        "14",
+        "15"
+      ],
+      "statement": "Tie delivery and compatibility claims to reproducible, non-vacuous evidence."
+    }
+  ]
+}
