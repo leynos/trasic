@@ -15,11 +15,12 @@ struct WorkflowCommand<'a> {
 }
 
 /// Traverse optional YAML mappings without panicking on changed workflow shape.
-fn path<'a>(value: &'a Value, keys: &[&str]) -> Option<&'a Value> {
+pub(super) fn path<'a>(value: &'a Value, keys: &[&str]) -> Option<&'a Value> {
     keys.iter().try_fold(value, |parent, key| parent.get(*key))
 }
 
-fn string<'a>(value: &'a Value, keys: &[&str]) -> Option<&'a str> {
+/// Read one textual YAML value without coercing malformed shapes.
+pub(super) fn string<'a>(value: &'a Value, keys: &[&str]) -> Option<&'a str> {
     path(value, keys).and_then(Value::as_str)
 }
 

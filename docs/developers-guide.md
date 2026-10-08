@@ -152,6 +152,13 @@ directories, which normalize parent components. The helper belongs to those
 infrastructure suites; it is not a production filesystem abstraction or a
 general test framework.
 
+`tests/support/build_tool_workflow_policy.rs` owns audit, design, and mutation
+metadata and ordered-command contracts for the `build_tool_workflows` suite. It
+reuses strict workflow parsing and immutable action identity checks. Its
+independent mutation fixtures change events, permission scopes, credentials,
+action references, cache inputs, commands, and setup order. These predicates
+remain test-only; they are not a general workflow execution framework.
+
 The `ExpectedCommand`, `RepositoryRoute`, and `ExpectedStep` fixture types
 group command identity, path expectations, and step settings for their named
 assertions. They remain private to the Make/Whitaker/Act contract suites and

@@ -5,6 +5,10 @@
 #[path = "support/build_tools_installer.rs"]
 mod support;
 
+/// Shared pin-reader and entry-point rejection cases using the offline fixture.
+#[path = "support/build_tools_pin_tests.rs"]
+mod pins;
+
 use std::error::Error;
 
 use camino::Utf8Path;

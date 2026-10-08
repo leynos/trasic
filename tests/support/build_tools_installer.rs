@@ -187,12 +187,28 @@ const TAR_SCRIPT: &str = concat!(
     "printf '%s\\0' \"$@\" > \"$FIXTURE_ROOT/tar.args\"\n",
     "[ \"${TAR_FAIL:-0}\" != 1 ]\n",
 );
-/// Separates host probing from exact toolchain installation arguments.
-const RUSTUP_SCRIPT: &str = concat!(
-    "if [ \"$1\" = show ]; then printf 'Default host: %s\\n' \"$FAKE_HOST_TRIPLE\"; exit 0; fi\n",
-    "printf '%s\\0' \"$@\" > \"$FIXTURE_ROOT/rustup.args\"\n",
-    "[ \"${RUSTUP_FAIL:-0}\" != 1 ]\n",
-);
+/// Separates host and component queries from exact toolchain installation arguments.
+const RUSTUP_SCRIPT: &str = r#"
+case "$1 ${2:-}" in
+  'show ')
+    printf '%s\0' "$@" > "$FIXTURE_ROOT/rustup-show.args"
+    printf 'Default host: %s\n' "$FAKE_HOST_TRIPLE"
+    ;;
+  'toolchain list')
+    printf '%s\0' "$@" > "$FIXTURE_ROOT/rustup-toolchains.args"
+    printf 'nightly-2001-02-03-%s (default)\n' "$FAKE_HOST_TRIPLE"
+    ;;
+  'component list')
+    printf '%s\0' "$@" > "$FIXTURE_ROOT/rustup-components.args"
+    printf 'clippy-%s\nrustfmt-%s\n' "$FAKE_HOST_TRIPLE" "$FAKE_HOST_TRIPLE"
+    ;;
+  *)
+    printf '%s\0' "$@" > "$FIXTURE_ROOT/rustup.args"
+    [ "${RUSTUP_FAIL:-0}" != 1 ]
+    ;;
+esac
+"#;
+
 /// Makes supported and unsupported hosts independent of the test machine.
 const UNAME_SCRIPT: &str = concat!(
     "case \"$1\" in\n",

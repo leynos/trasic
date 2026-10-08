@@ -3,6 +3,13 @@
 #[path = "support/build_tool_workflows.rs"]
 mod support;
 
+/// Immutable action identities shared with the Act workflow contracts.
+#[path = "support/action_ref.rs"]
+mod action_ref;
+/// Metadata and ordered commands for the audit, design, and mutation lanes.
+#[path = "support/build_tool_workflow_policy.rs"]
+mod policy;
+
 use support::{workflow, workflow_violations, workflows};
 
 #[test]

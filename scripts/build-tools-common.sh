@@ -14,10 +14,10 @@ set -euo pipefail
 BUILD_TOOLS_HELPER_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 BUILD_TOOLS_REPO_ROOT=$(cd -- "$BUILD_TOOLS_HELPER_DIR/.." && pwd)
 
-# Pin files default to their committed locations. An explicit override still
-# wins, which is what lets the tests point the scripts at fixtures. `read_pin`
-# validates whichever path is selected, so a missing or empty file is reported
-# the same way whether it came from a default or an override.
+# Pin files default to their committed locations. Explicit overrides let tests
+# supply private fixtures. `read_pin` validates raw mold pins; the toolchain
+# helpers inspect the channel and components in the selected TOML file. Each
+# helper diagnoses invalid content whether the path is a default or an override.
 MOLD_VERSION_FILE="${MOLD_VERSION_FILE:-$BUILD_TOOLS_REPO_ROOT/tools/mold/VERSION}"
 MOLD_SHA256SUMS_FILE="${MOLD_SHA256SUMS_FILE:-$BUILD_TOOLS_REPO_ROOT/tools/mold/SHA256SUMS}"
 RUST_TOOLCHAIN_FILE="${RUST_TOOLCHAIN_FILE:-$BUILD_TOOLS_REPO_ROOT/rust-toolchain.toml}"
@@ -50,7 +50,9 @@ fail() {
 read_pin() {
   local file=$1 value lines
   [ -f "$file" ] || fail "missing version pin: $file"
-  lines=$(grep -c '' <"$file")
+  # Unlike grep -c, awk succeeds for an empty file so the diagnostic below
+  # remains reachable when a caller invokes this helper directly under set -e.
+  lines=$(awk 'END { print NR }' "$file")
   [ "$lines" -le 1 ] || fail "expected one line in version pin: $file, found $lines"
   # `$(...)` strips trailing newlines; the parameter expansions trim spaces and
   # tabs from each end without touching anything between them.
