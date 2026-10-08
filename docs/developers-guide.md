@@ -284,9 +284,33 @@ Before Whitaker installation, `tools/whitaker_probe.py` resolves the workflow's
 pinned action revision and verifies reviewed source digests against
 `tools/whitaker-approved.json`. Equivalent content at a new revision can pass;
 changed execution content requires review and explicit evidence-map updates.
-The probes use denied download/build executors and private paths for their
-source-derived controls. They are not an operating-system sandbox and do not
-prove every nested action or real installer behaviour.
+The command reads the workflow and approval file once, acquires each approved
+path at the caller's immutable revision, and supplies those contents through
+`ResolvedSources`. The pure `verify_workflow` function accepts the workflow
+text, explicit approval map, and acquired contents. It authenticates every
+reviewed digest and returns a `VerifiedWorkflow` containing the manifest and
+provenance. Capability execution follows complete content approval; a probe
+failure produces a nonzero command result and no success provenance.
+
+`tools/whitaker_source.py` owns bounded HTTPS acquisition for this Whitaker
+execution set. Its `HttpsSourceFetcher` receives an approved path set and
+explicit `AcquisitionDependencies`: a response opener, monotonic clock, and
+byte/socket/elapsed-time limits. The command composition root supplies the real
+no-redirect opener, a 10-second socket timeout, a 30-second per-source elapsed
+deadline, and the 128 KiB source bound. Acquisition errors remain separate from
+content-validation errors. This adapter and its value types belong to the
+Whitaker infrastructure command and its tests; product code must not depend on
+them.
+
+`CommandRuntime` exposes acquisition, capability execution, and output streams
+at the public command boundary. Test-local runtime and recording-transport
+helpers exercise that interface without replacing internal transport or clock
+implementations. `tools/whitaker_capability.py` retains ownership of private
+probe directories, child environments, the five-second execution deadline, and
+process-group termination and reaping. The probes use denied download/build
+executors and private paths for their source-derived controls. They are not an
+operating-system sandbox and do not prove every nested action or real installer
+behaviour.
 
 ## 7. Add implementation without changing the evidence boundary
 
