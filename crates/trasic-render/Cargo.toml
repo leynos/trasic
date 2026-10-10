@@ -1,0 +1,16 @@
+[package]
+name = "trasic-render"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Camera rays, sampling, transport, reconstruction, tile scheduling, and film commits."
+
+[lints]
+workspace = true
+
+[dependencies]
+trasic-scene.workspace = true
+trasic-geometry.workspace = true
+trasic-texture.workspace = true

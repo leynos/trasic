@@ -1,0 +1,15 @@
+[package]
+name = "trasic-eval"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Evaluation driver, scopes, expansion frames, language coercions, semantic lowering, and scene finalization."
+
+[lints]
+workspace = true
+
+[dependencies]
+trasic-sdl.workspace = true
+trasic-scene.workspace = true

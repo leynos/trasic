@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Trasic oracle envelope, proposed revision 0.1",
+  "description": "Metadata envelope only. Scene payload validation uses the profile-specific scene schema and semantic checks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "profile_id",
+    "reference",
+    "exporter",
+    "inputs",
+    "coverage",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "trasic.oracle-envelope/0.1"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "sealed"
+      ]
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "commit",
+        "build_manifest_sha256"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "build_manifest_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "exporter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "patch_sha256",
+        "checkpoint",
+        "schema_sha256"
+      ],
+      "properties": {
+        "patch_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "checkpoint": {
+          "enum": [
+            "conceptual-scene-v1"
+          ]
+        },
+        "schema_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "logical_path",
+          "sha256"
+        ],
+        "properties": {
+          "logical_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "feature",
+          "state"
+        ],
+        "properties": {
+          "feature": {
+            "type": "string",
+            "minLength": 1
+          },
+          "state": {
+            "enum": [
+              "complete",
+              "partial",
+              "unsupported"
+            ]
+          }
+        }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "const": "conceptual-scene"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "sealed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "reference": {
+            "properties": {
+              "commit": {
+                "type": "string"
+              },
+              "build_manifest_sha256": {
+                "type": "string"
+              }
+            }
+          },
+          "exporter": {
+            "properties": {
+              "patch_sha256": {
+                "type": "string"
+              },
+              "schema_sha256": {
+                "type": "string"
+              }
+            }
+          },
+          "inputs": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}
