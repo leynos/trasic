@@ -12,6 +12,7 @@
 
 [unstable]
 codegen-backend = true
+embed-metadata = false
 
 [profile.dev]
 codegen-backend = "cranelift"

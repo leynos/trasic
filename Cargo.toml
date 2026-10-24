@@ -106,6 +106,10 @@ renamed_and_removed_lints           = "deny"
 unsafe_code                         = "forbid"
 missing_docs                        = "deny"
 
+[profile.dev]
+incremental = false
+debug = 0
+
 [workspace.lints.rustdoc]
 missing_crate_level_docs            = "deny"
 broken_intra_doc_links              = "deny"
