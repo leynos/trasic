@@ -166,7 +166,7 @@ class CommandOrchestrationTests(unittest.TestCase):
         events = []
         dependencies = runtime(self.transport(APPROVED, events), probe_manifest)
         self.assertEqual(run_command('b' * 40, dependencies), 0)
-        self.assertIn('scenarios=12', dependencies.output.getvalue())
+        self.assertIn('scenarios=13', dependencies.output.getvalue())
         self.assertEqual(events, [('acquire', path) for path in APPROVED])
 
     def test_each_unapproved_source_prevents_probe_and_success_output(self):
