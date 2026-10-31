@@ -328,3 +328,15 @@ processes, assets, and evidence bundles must carry the profile, provenance,
 resource, and acceptance boundaries defined by their reviewed implementation
 work. An empty crate, a passing workflow, or an unsealed metadata example
 cannot substitute for that evidence.
+
+## Toolchain updates
+
+`rust-toolchain.toml` pins `nightly-2026-08-27`. Dependabot's `rust-toolchain`
+entry in `.github/dependabot.yml` (directory `/`, daily, the `dependencies` and
+`rust-toolchain` labels, one `minor-and-patch` catch-all group) opens a pull
+request when a newer toolchain exists. Review it like any other change: CI
+builds and tests the project on the new toolchain. Dated nightly versions carry
+no SemVer meaning, so whether Dependabot groups a bump or opens it alone depends
+on how it classifies the version; both are normal. The entry sets no cooldown:
+Dependabot's toolchain fetcher publishes no release date, so a cooldown would
+delay nothing.
