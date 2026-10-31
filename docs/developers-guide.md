@@ -44,7 +44,7 @@ settings are unsupported.
 
 Install the remaining tools needed by the applicable gates:
 
-- `mdtablefix` 0.6.0 or later; CI pins 0.6.0.
+- `mdtablefix` 0.6.1 or later; CI pins 0.6.1.
 - `markdownlint-cli2`, installed through Bun or npm.
 - `uv`, for the shared spelling gate and workflow capability probes.
 - Whitaker, using the reviewed capability and binary-installation boundary
@@ -56,10 +56,10 @@ For example, install the pinned Markdown formatter with either Cargo Binstall
 or a locked source installation:
 
 ```bash
-cargo binstall --no-confirm mdtablefix@0.6.0
+cargo binstall --no-confirm mdtablefix@0.6.1
 ```
 
-The alternative is `cargo install --locked mdtablefix@0.6.0`. Install
+The alternative is `cargo install --locked mdtablefix@0.6.1`. Install
 `markdownlint-cli2` with `bun add --global markdownlint-cli2` or
 `npm install --global markdownlint-cli2`. Tool installation and first builds
 may acquire dependencies; no product scene execution occurs during setup.
