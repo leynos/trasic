@@ -53,7 +53,7 @@ The build, lint, workflow, and contribution baseline comes from
 [Combobulate pull request 1](https://github.com/leynos/combobulate/pull/1), at
 commit `6c9f1c37e278bf4c8a9c01ad5e47413b4bb60e17`. Trasic adapts that
 single-package baseline into a virtual workspace with inherited dependencies
-and lints. The [bootstrap decision](docs/adr-001-repository-bootstrap.md)
+and lints. The [bootstrap decision](docs/adrs/adr-0001-repository-bootstrap.md)
 records that limited adoption separately from the proposed product design.
 
 The repository carries the [ISC licence](LICENSE). All scaffold packages set

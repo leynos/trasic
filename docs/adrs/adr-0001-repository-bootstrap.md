@@ -1,4 +1,4 @@
-# Architectural decision record (ADR) 001: Repository bootstrap
+# Architectural decision record (ADR) 0001: Repository bootstrap
 
 ## Status
 

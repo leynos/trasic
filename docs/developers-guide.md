@@ -2,8 +2,9 @@
 
 This guide covers setup, quality gates, and workflow operations for
 contributors working on the Trasic bootstrap. Read the
-[repository layout](repository-layout.md), [bootstrap decision](adr-001-repository-bootstrap.md),
-and [assistant instructions](../AGENTS.md) alongside it. The
+[repository layout](repository-layout.md), the
+[bootstrap decision](adrs/adr-0001-repository-bootstrap.md), and the
+[assistant instructions](../AGENTS.md) alongside it. The
 [technical design](technical-design.md) describes proposed product contracts,
 not an implemented parser or renderer.
 
