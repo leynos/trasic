@@ -274,7 +274,7 @@ def main() -> int:
     """Run the documentation checks as a command and return the exit status.
 
     Print the report, optionally write docs/validation-results.json, and return 1
-    on failure with the diagnostic on stderr.
+    with the diagnostic on stderr when the checks run by ``run()`` fail.
     """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--write-report', action='store_true',
