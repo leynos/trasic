@@ -68,6 +68,7 @@ def check_graph(graph: dict[str, set[str]]) -> None:
     visited: set[str] = set()
 
     def visit(name: str) -> None:
+        """Visit one node depth-first, rejecting unknown names and cycles."""
         require(name in graph, f'Cargo dependency graph has unknown dependency {name}')
         require(name not in visiting, f'Cargo dependency cycle through {name}')
         if name in visited:
