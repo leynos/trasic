@@ -24,10 +24,10 @@ review establish them.
 ## 2. Prepare the development tools
 
 Install Rustup, Make, Python, and Clang before using the native development
-route. The pinned toolchain is `nightly-2026-08-27`, with Clippy, Rustfmt,
-`rust-analyzer`, Cranelift, and LLVM tools. On native x86_64 GNU Linux, the
-installer acquires checksum-verified `mold` 2.41.0. Coverage additionally needs
-`lld` and `cargo-llvm-cov`.
+route. The pinned toolchain is the nightly in `rust-toolchain.toml`, with
+Clippy, Rustfmt, `rust-analyzer`, Cranelift, and LLVM tools. On native x86_64
+GNU Linux, the installer acquires checksum-verified `mold` 2.41.0. Coverage
+additionally needs `lld` and `cargo-llvm-cov`.
 
 ```bash
 make install-build-tools
@@ -331,8 +331,8 @@ cannot substitute for that evidence.
 
 ## Toolchain updates
 
-`rust-toolchain.toml` pins `nightly-2026-08-27`. Dependabot's `rust-toolchain`
-entry in `.github/dependabot.yml` (directory `/`, daily, the `dependencies` and
+`rust-toolchain.toml` pins a dated nightly. Dependabot's `rust-toolchain` entry
+in `.github/dependabot.yml` (directory `/`, daily, the `dependencies` and
 `rust-toolchain` labels, one `minor-and-patch` catch-all group) opens a pull
 request when a newer toolchain exists. Review it like any other change: CI
 builds and tests the project on the new toolchain. Dated nightly versions carry

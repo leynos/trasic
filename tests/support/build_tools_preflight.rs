@@ -18,6 +18,23 @@ use cap_std::{
 type Read<T> = Result<T, Box<dyn Error>>;
 static NEXT_ID: AtomicUsize = AtomicUsize::new(0);
 
+/// Reads the pinned channel from `rust-toolchain.toml`, which Dependabot moves
+/// daily, so no test restates the date.
+pub(super) fn pinned_channel() -> Read<String> {
+    let root = Dir::open_ambient_dir(
+        Utf8Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../..")),
+        ambient_authority(),
+    )?;
+    let source = root.read_to_string("rust-toolchain.toml")?;
+    let document: toml::Value = toml::from_str(&source)?;
+    document
+        .get("toolchain")
+        .and_then(|toolchain| toolchain.get("channel"))
+        .and_then(toml::Value::as_str)
+        .map(str::to_owned)
+        .ok_or_else(|| "toolchain channel must be a string".into())
+}
+
 /// Owns fake build tools in a private scratch directory.
 pub(super) struct ToolFixture {
     parent: Dir,
@@ -46,7 +63,7 @@ impl ToolFixture {
         )?;
         directory.write(
             "toolchains",
-            "nightly-2026-08-27-x86_64-unknown-linux-gnu (default)\n",
+            format!("{}-x86_64-unknown-linux-gnu (default)\n", pinned_channel()?),
         )?;
         directory.create_dir("bin")?;
         directory.write(
