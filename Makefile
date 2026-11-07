@@ -127,6 +127,31 @@ coverage: check-coverage-tools ## Generate lcov coverage with lld for llvm-tools
 lint: ## Run rustdoc, Clippy, then Whitaker sequentially
 	+$(MAKE) lint-clippy
 	+$(MAKE) lint-whitaker
+	+$(MAKE) interrogate
+
+# Interrogate scans each target recursively, subject to its default exclusions.
+INTERROGATE_VERSION ?= 1.7.0
+INTERROGATE_TARGETS ?= tools
+# Level 2 prints a MISSED row per undocumented definition, which the
+# `interrogate` recipe below looks for: the rounded percentage alone can pass a
+# lone gap.
+INTERROGATE_FLAGS ?= -vv --fail-under 100
+INTERROGATE ?= uv tool run --python 3.14 --from 'interrogate==$(INTERROGATE_VERSION)' interrogate
+
+# Interrogate rounds its percentage to one decimal, so `--fail-under 100` alone
+# can pass a lone gap. This recipe also fails when `grep` finds a MISSED row in
+# the report on standard output. `grep` reads the whole report (no `-q`), so an
+# early exit cannot break the pipe under `pipefail`.
+.PHONY: interrogate
+interrogate: ## Enforce complete Python docstring coverage
+	@report="$$($(INTERROGATE) $(INTERROGATE_FLAGS) $(INTERROGATE_TARGETS))"; \
+	  status=$$?; \
+	  printf '%s\n' "$$report"; \
+	  test "$$status" -eq 0 || exit "$$status"; \
+	  if printf '%s\n' "$$report" | grep '| *MISSED *|' >/dev/null; then \
+	    printf '%s\n' 'interrogate: undocumented definitions remain; see the MISSED rows above' >&2; \
+	    exit 1; \
+	  fi
 
 lint-clippy: check-build-tools ## Run rustdoc and Clippy with warnings denied
 	RUSTDOCFLAGS="$(RUSTDOC_FLAGS)" RUSTFLAGS="$${RUSTFLAGS:+$$RUSTFLAGS }$(DEV_RUST_FLAGS)" $(CARGO) doc --workspace --no-deps

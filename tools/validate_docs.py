@@ -41,21 +41,25 @@ class CheckFailure(Exception):
 
 
 def require(condition: bool, message: str) -> None:
+    """Raise CheckFailure with the message when the condition is false."""
     if not condition:
         raise CheckFailure(message)
 
 
 def read_json(relative: str) -> dict[str, Any]:
+    """Load a JSON object from a path under ROOT, rejecting other JSON types."""
     value = json.loads((ROOT / relative).read_text(encoding='utf-8'))
     require(isinstance(value, dict), f'{relative}: expected an object')
     return value
 
 
 def check_dag(graph: dict[str, list[str]], label: str) -> None:
+    """Reject unknown dependencies and cycles, reporting them under the label."""
     visiting: set[str] = set()
     visited: set[str] = set()
 
     def visit(node: str) -> None:
+        """Visit one node depth-first, rejecting unknown names and cycles."""
         require(node in graph, f'{label}: unknown dependency {node}')
         require(node not in visiting, f'{label}: cycle through {node}')
         if node in visited:
@@ -71,6 +75,11 @@ def check_dag(graph: dict[str, list[str]], label: str) -> None:
 
 
 def check_architecture() -> dict[str, int]:
+    """Check the architecture model and return its crate and requirement counts.
+
+    Require an acyclic crate graph, leaf Scene and SDL crates, conformance kept
+    out of production edges, and six direct CLI dependencies.
+    """
     model = read_json('spec/architecture.json')
     crates = model['crates']
     graph = {crate['name']: crate['depends_on'] for crate in crates}
@@ -88,10 +97,16 @@ def check_architecture() -> dict[str, int]:
 
 
 def normalized(text: str) -> str:
+    """Collapse runs of whitespace in the text to single spaces."""
     return ' '.join(text.split())
 
 
 def check_roadmap() -> dict[str, int]:
+    """Check the roadmap JSON against its Markdown mirror and design sections.
+
+    Verify numbering, prerequisites, planned status, coverage, and task prose,
+    then return phase, step, task, section, and goal counts.
+    """
     roadmap = read_json('spec/roadmap.json')
     md = (ROOT / 'docs/roadmap.md').read_text(encoding='utf-8')
     design = (ROOT / 'docs/technical-design.md').read_text(encoding='utf-8')
@@ -160,6 +175,11 @@ def check_roadmap() -> dict[str, int]:
 
 
 def check_envelope() -> dict[str, int]:
+    """Check the oracle-envelope schema and its synthetic admission controls.
+
+    The controls are synthetic metadata fixtures and never count as conformance
+    evidence. No renderer runs.
+    """
     schema = read_json('spec/oracle-envelope.schema.json')
     Draft202012Validator.check_schema(schema)
     validator = Draft202012Validator(schema)
@@ -187,6 +207,11 @@ def check_envelope() -> dict[str, int]:
 
 
 def check_markdown() -> dict[str, int]:
+    """Check Markdown structure, typography, and local links in the pack.
+
+    Local link targets must exist inside the repository; URLs and fragment-only
+    links are skipped.
+    """
     parser = MarkdownIt('commonmark').enable('table')
     paths = markdown_paths()
     link_count = 0
@@ -219,6 +244,11 @@ def check_markdown() -> dict[str, int]:
 
 
 def run() -> dict[str, Any]:
+    """Run every documentation check and build the JSON-serializable report.
+
+    The report also hashes the checked sources and lists what the checks do not
+    establish.
+    """
     counts: dict[str, int] = {}
     checks = []
     for name, check in (
@@ -241,6 +271,11 @@ def run() -> dict[str, Any]:
 
 
 def main() -> int:
+    """Run the documentation checks as a command and return the exit status.
+
+    Print the report, optionally write docs/validation-results.json, and return 1
+    on failure with the diagnostic on stderr.
+    """
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--write-report', action='store_true',
                         help='Write docs/validation-results.json after checks pass')

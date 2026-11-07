@@ -18,6 +18,7 @@ class DesignContracts(unittest.TestCase):
     """Keep the imported roadmap and reference metadata falsifiable."""
 
     def setUp(self):
+        """Copy the documentation pack into a temporary root and patch the checker."""
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
         self.root = Path(self.directory.name)
@@ -70,18 +71,22 @@ class DesignContracts(unittest.TestCase):
                 self.assertNotIn('Traceback', result.stderr)
 
     def test_unmodified_reader_links_pass(self):
+        """Assert the unmodified pack has at least one checked relative link."""
         self.assertGreater(checker.check_markdown()['relative_links'], 0)
 
     def test_imported_roadmap_passes(self):
+        """Assert the imported roadmap passes and contains 66 tasks."""
         self.assertEqual(checker.check_roadmap()['tasks'], 66)
 
     def test_false_completion_fails(self):
+        """Assert that a roadmap task ticked as complete fails the check."""
         path = self.root / 'docs/roadmap.md'
         path.write_text(path.read_text().replace('- [ ] 1.1.1.', '- [x] 1.1.1.', 1))
         with self.assertRaisesRegex(checker.CheckFailure, 'status drift'):
             checker.check_roadmap()
 
     def test_forward_prerequisite_fails(self):
+        """Assert that a task requiring a later task fails the roadmap check."""
         path = self.root / 'spec/roadmap.json'
         roadmap = json.loads(path.read_text())
         roadmap['phases'][0]['steps'][0]['tasks'][0]['requires'] = ['8.3.3']
@@ -90,15 +95,18 @@ class DesignContracts(unittest.TestCase):
             checker.check_roadmap()
 
     def test_schema_admission_controls_pass(self):
+        """Assert that all five envelope schema admission controls hold."""
         self.assertEqual(checker.check_envelope()['schema_controls'], 5)
 
     def test_missing_local_link_fails(self):
+        """Assert that a README link to a missing file fails the Markdown check."""
         path = self.root / 'README.md'
         path.write_text(path.read_text() + '\n[Missing](docs/does-not-exist.md).\n')
         with self.assertRaisesRegex(checker.CheckFailure, 'missing link target'):
             checker.check_markdown()
 
     def test_reader_links_cannot_escape_repository(self):
+        """Assert that a README link climbing above the repository root fails."""
         path = self.root / 'README.md'
         path.write_text(path.read_text() + '\n[Escaping](../outside.md).\n')
         with self.assertRaisesRegex(checker.CheckFailure, 'link escapes'):

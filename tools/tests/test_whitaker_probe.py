@@ -133,6 +133,7 @@ class CommandOrchestrationTests(unittest.TestCase):
     def transport(self, sources: dict[str, str], events: list[tuple[str, str]]) -> SourceOpener:
         """Return a recording transport for approved fixture content at exact URLs."""
         def open_response(url: str, *, timeout: float):
+            """Serve approved fixture bytes for a helper URL and record the fetch."""
             prefix = ('https://raw.githubusercontent.com/leynos/shared-actions/' +
                       'b' * 40 + '/.github/actions/install-whitaker/')
             self.assertTrue(url.startswith(prefix))
@@ -148,6 +149,7 @@ class CommandOrchestrationTests(unittest.TestCase):
         """No source is reacquired after approval and the probe receives the verified manifest."""
         events = []
         def recorded_probe(manifest):
+            """Assert acquisition order and manifest identity, then return 12."""
             self.assertEqual(events, [('acquire', path) for path in APPROVED])
             self.assertEqual(manifest, yaml.safe_load(CAPABLE))
             events.append(('probe', 'verified'))
