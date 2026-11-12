@@ -22,7 +22,7 @@ design documents prepared on 7 October 2026.
 
 The source baseline contains a single root package and Combobulate-specific
 documentation tooling. Trasic's proposed
-[architecture model](../spec/architecture.json) names eight crates, so a
+[architecture model](../../spec/architecture.json) names eight crates, so a
 literal copy would conceal the intended boundaries and leave root integration
 tests undiscovered in a virtual workspace.
 
@@ -84,7 +84,8 @@ hgpovray compatibility, numerical correctness, or proof discharge.
 
 ## Related documents
 
-- [Developers' guide](developers-guide.md): operating the adopted controls.
-- [Repository layout](repository-layout.md): current paths and crate boundaries.
-- [Technical design](technical-design.md): proposed product contracts.
-- [Validation](validation.md): supplementary evidence scope.
+- [Developers' guide](../developers-guide.md): operating the adopted controls.
+- [Repository layout](../repository-layout.md): current paths and crate
+  boundaries.
+- [Technical design](../technical-design.md): proposed product contracts.
+- [Validation](../validation.md): supplementary evidence scope.
