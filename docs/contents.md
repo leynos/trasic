@@ -13,8 +13,11 @@
 - [Documentation style guide](documentation-style-guide.md): repository prose,
   document roles, and examples.
 - [Assistant instructions](../AGENTS.md): coding and contribution rules.
-- [Repository bootstrap decision](adr-001-repository-bootstrap.md): the imported
-  baseline, workspace adaptation, and limits of this adoption.
+
+## Decision records
+
+- [Repository bootstrap decision](adrs/adr-0001-repository-bootstrap.md): the
+  imported baseline, workspace adaptation, and limits of this adoption.
 
 ## Proposed product design
 
