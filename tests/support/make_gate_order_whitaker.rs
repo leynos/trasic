@@ -114,8 +114,8 @@ fn assert_repository_config(
 ) {
     let expected = [
         (
-            "profile.dev.codegen-backend",
-            "profile.dev.codegen-backend = \"cranelift\"",
+            "unstable.codegen-backend",
+            "unstable.codegen-backend = true",
         ),
         ("build.rustflags", "build.rustflags = [\"-Zthreads=8\"]"),
         (

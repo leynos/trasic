@@ -16,10 +16,10 @@ evidence.
 
 Read [AGENTS.md](AGENTS.md), the [developers' guide](docs/developers-guide.md),
 and the [repository layout](docs/repository-layout.md) before changing the
-scaffold. The native development route uses the pinned nightly, Cranelift, and,
-on x86_64 GNU Linux, checksum-verified `mold`. Clang and Python must already be
-available; coverage also needs `lld`. The developers' guide lists the remaining
-lint and documentation tools.
+scaffold. The native development route uses the pinned nightly, LLVM by default
+(Cranelift remains an opt-in), and, on x86_64 GNU Linux, checksum-verified
+`mold`. Clang and Python must already be available; coverage also needs `lld`.
+The developers' guide lists the remaining lint and documentation tools.
 
 ```bash
 make install-build-tools

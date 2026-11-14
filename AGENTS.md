@@ -143,7 +143,8 @@ project:
   toolchain and the checksum-verified `mold` 2.41.0 release. Run
   `make check-build-tools` to inspect development prerequisites;
   `make coverage` additionally checks clang and lld.
-- Bare Cargo development builds use Cranelift and the parallel frontend from
+- Bare Cargo development builds use LLVM (the default backend; the Cranelift
+  selection is disabled, review due 14 May 2027) and the parallel frontend from
   `.cargo/config.toml`; native x86_64 GNU Linux builds use the repository's
   Clang wrapper to select pinned `mold` ahead of the system linker. Make
   targets that assign `RUSTFLAGS` restate the development flags because Cargo
@@ -154,9 +155,9 @@ project:
   workspace. `publish = false` prohibits publication, but does not prevent
   Cargo from attempting to package members. Measured coverage also selects
   LLVM. The release and coverage routes exclude the parallel frontend,
-  Cranelift, and `mold`. Coverage uses lld. Development Make gates reject a
-  non-Cranelift `CARGO_PROFILE_DEV_CODEGEN_BACKEND` override. Cross-target Make
-  builds, x86_64 Linux musl, and encoded Rust flags are unsupported for the
+  Cranelift, and `mold`. Coverage uses lld. Development Make gates accept an
+  unset, LLVM or Cranelift `CARGO_PROFILE_DEV_CODEGEN_BACKEND`. Cross-target
+  Make builds, x86_64 Linux musl, and encoded Rust flags are unsupported for the
   `mold` route; native linker overrides must select the repository's Clang
   wrapper.
 - Run `make check-fmt`, `make lint`, and `make test` before committing. These

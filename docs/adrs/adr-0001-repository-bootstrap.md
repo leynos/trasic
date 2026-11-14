@@ -47,12 +47,14 @@ explicit `[[test]]` registrations pointing into root `tests/`. Keep conformance
 development-only by prohibiting production edges to it. Make build, test, lint,
 documentation, release, and coverage routes operate on the workspace.
 
-Preserve the imported Cranelift development route, pinned nightly and `mold`,
-LLVM production and coverage routes, Whitaker capability probes, Markdown
-controls, and workflow contract tests. Retain daily Dependabot updates and the
-weekly dependency audit. Keep mutation testing manual during the bootstrap,
-before meaningful product code exists. Preserve the main-branch coverage
-publisher, while leaving external CodeScene provisioning to the owner.
+Preserve the imported development route (its Cranelift selection is disabled
+since 14 November 2026; the estate standard is LLVM, review due 14 May 2027),
+pinned nightly and `mold`, LLVM production and coverage routes, Whitaker
+capability probes, Markdown controls, and workflow contract tests. Retain daily
+Dependabot updates and the weekly dependency audit. Keep mutation testing
+manual during the bootstrap, before meaningful product code exists. Preserve
+the main-branch coverage publisher, while leaving external CodeScene
+provisioning to the owner.
 
 Import the Trasic proposed design pack without treating its contents as
 implemented behaviour. Keep its supplementary validator and add actual
