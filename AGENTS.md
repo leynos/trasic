@@ -281,12 +281,12 @@ project:
 
     building documentation before linting every target with all features
     enabled. Whitaker also clears inherited `RUSTFLAGS` before its preflight.
-    The `interrogate` step runs `interrogate` 1.7.0 through `uv tool run` and
-    fails on any `MISSED` row, so every Python definition under `tools` must
-    carry a docstring. Documentation warnings, Clippy warnings, Whitaker
-    findings, and undocumented Python definitions fail the command. `make all`
-    runs formatting, linting, testing, and spelling in order even under
-    `make -j all`.
+    The `interrogate` step runs `interrogate` 1.7.0 through `uv tool run`,
+    scans `tools` recursively subject to its default exclusions, and fails on
+    any `MISSED` row. Documentation warnings, Clippy warnings, Whitaker
+    findings, and undocumented Python definitions that `interrogate` scans fail
+    the command. `make all` runs formatting, linting, testing, and spelling in
+    order even under `make -j all`.
   - `make test` checks build prerequisites, fetches locked dependencies, and
     uses `cargo-nextest` when available, falling back to `cargo test`. Both
     Cargo commands retain caller `RUSTFLAGS` alongside the development flags;
@@ -307,7 +307,8 @@ project:
     Use `make fmt` to apply Rust and Markdown formatting fixes.
 
   The hosted `build-test` job is the authoritative repository gate. Every PR
-  runs workflow-structure and command-contract tests through `make test`.
+  runs workflow-structure and command-contract tests in the hosted
+  `generate-coverage` lane; under Act, `make test` runs them.
   `.github/workflows/act-validation.yml` is manual-dispatch only; its full Act
   run checks local runner compatibility and does not prove parity with hosted
   GitHub Actions. `make test WITH_ACT=1` remains available for that local
