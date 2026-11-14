@@ -178,12 +178,18 @@ mutation campaigns as an incidental bootstrap check.
 
 ## 4. Preserve compiler and linker routes
 
-Development Cargo defaults select Cranelift and the parallel frontend through
-`.cargo/config.toml`. Native x86_64 GNU Linux also uses the checked Clang
-wrapper and pinned `mold`. Assigning `RUSTFLAGS` replaces Cargo's configured
-flags, so Make restates development flags and retains caller flags for its
-development recipes. Preflight rejects a non-Cranelift development backend
-override.
+Development Cargo defaults select LLVM and the parallel frontend through
+`.cargo/config.toml`. The estate standard is LLVM; review is due 14 May 2027
+under the
+[estate ADR](https://github.com/leynos/concordat/blob/main/docs/adrs/adr-0004-cranelift-is-not-part-of-the-rust-build-standard.md).
+The `[profile.dev] codegen-backend = "cranelift"` selection is commented out.
+Uncommenting it is a persistent opt-in that also needs the tests that assert
+the LLVM default updated; Cranelift does not unwind, so no test may rely on a
+caught panic under it. The `[unstable] codegen-backend` key and the component
+stay. Native x86_64 GNU Linux also uses the checked Clang wrapper and pinned
+`mold`. Assigning `RUSTFLAGS` replaces Cargo's configured flags, so Make
+restates development flags and retains caller flags for its development
+recipes. Preflight accepts an unset, LLVM or Cranelift development backend.
 
 `make release` explicitly selects LLVM for both dev and release profiles,
 including release host and build-script units, and uses production flags. Use

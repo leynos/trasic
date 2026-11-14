@@ -16,7 +16,7 @@ metadata, dependencies, and lints, but no root Rust package.
 | `spec/`                           | Proposed architecture, structured roadmap, and oracle-envelope artefacts.                                |
 | `tools/`                          | Documentation/workspace validation, Whitaker capability probes, their tests, and pinned `mold` evidence. |
 | `scripts/`                        | Shared build-tool installation, preflight, and native Clang linker routing.                              |
-| `.cargo/`                         | Cargo development defaults: Cranelift, parallel frontend, and supported native linker settings.          |
+| `.cargo/`                         | Cargo development defaults: LLVM, parallel frontend, and supported native linker settings.               |
 | `.github/`                        | Continuous Integration (CI), coverage, audit, manual validation workflows, and Dependabot configuration. |
 | `Makefile`                        | Workspace build routes and quality gates.                                                                |
 | `rust-toolchain.toml`             | Pinned nightly and required compiler/tooling components.                                                 |
