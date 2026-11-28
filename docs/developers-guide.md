@@ -138,9 +138,18 @@ _Table 1: Bootstrap gate scope; no gate establishes product conformance._
 `make lint` builds workspace documentation without dependencies, denies Rustdoc
 warnings, and runs Clippy across all targets and features. Whitaker uses a
 clean environment for temporary driver construction, then checks the workspace
-under repository Cargo defaults. The cold-driver integration route remains
-available as `make whitaker-driver-integration`; fixture-based contract tests
-cannot substitute for that real integration.
+under repository Cargo defaults. The Python tooling checks run `interrogate`
+through the vendored `scripts/uv_gate.py` helper, which needs `python3` 3.9 or
+newer, finds `uv` on the cleaned `PATH` (outside `~/.lody`), uses the global uv
+cache and runs offline first with at most one online attempt; there is no `UV`
+override, and `UV_GATE_ALLOW_ONLINE=0` forbids the online step. It was verified
+with uv 0.13.7. A `uv` that reports only `Git operation failed` for a Git
+source missing from the cache is not retried online: warm the cache once with
+`uv tool run` on that source. `scripts/uv_gate.py` is the shared-actions helper
+copied byte for byte: update it by copying the canonical file, never by editing
+it. The cold-driver integration route remains available as
+`make whitaker-driver-integration`; fixture-based contract tests cannot
+substitute for that real integration.
 
 Cognitive complexity is not gated by Clippy. Clippy's `cognitive_complexity`
 scores code after macro expansion, so it counts branching a macro generated,
