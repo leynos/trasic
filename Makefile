@@ -132,12 +132,22 @@ lint: yamllint actionlint ## Run rustdoc, Clippy, then Whitaker sequentially
 
 # Interrogate scans each target recursively, subject to its default exclusions.
 INTERROGATE_VERSION ?= 1.7.0
-INTERROGATE_TARGETS ?= tools
+INTERROGATE_TARGETS ?= scripts tools
 # Level 2 prints a MISSED row per undocumented definition, which the
 # `interrogate` recipe below looks for: the rounded percentage alone can pass a
 # lone gap.
 INTERROGATE_FLAGS ?= -vv --fail-under 100
-INTERROGATE ?= uv tool run --python 3.14 --from 'interrogate==$(INTERROGATE_VERSION)' interrogate
+# Every uv call but the spelling builder's goes through the vendored helper,
+# which cleans the environment, uses the global uv cache, runs offline first and
+# goes online at most once. The builder runs directly at its release tag,
+# because the spelling baseline requires that form and the helper accepts only
+# a full commit. The helper finds `uv` on the cleaned `PATH` and needs python3
+# 3.9 or later; there is no `UV` override. See
+# https://github.com/leynos/shared-actions/tree/main/uv_gate for the contract.
+# `scripts/uv_gate.py` is the shared-actions helper, vendored byte for byte, so
+# update it by copying the canonical file, never by editing it here.
+UV_GATE ?= python3 scripts/uv_gate.py
+INTERROGATE ?= $(UV_GATE) tool --python 3.14 --from 'interrogate==$(INTERROGATE_VERSION)' -- interrogate
 
 # Interrogate rounds its percentage to one decimal, so `--fail-under 100` alone
 # can pass a lone gap. This recipe also fails when `grep` finds a MISSED row in

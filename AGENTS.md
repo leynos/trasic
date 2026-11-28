@@ -31,7 +31,9 @@
 - **Keep file size manageable.** No single code file may be longer than 400
   lines.  Long switch statements or dispatch tables should be broken up by
   feature and constituents colocated with targets. Large blocks of test data
-  should be moved to external data files.
+  should be moved to external data files. A file vendored byte for byte from an
+  upstream, such as `scripts/uv_gate.py`, is exempt, because splitting it would
+  break its canonical digest.
 
 ## Documentation maintenance
 
@@ -281,8 +283,11 @@ project:
 
     building documentation before linting every target with all features
     enabled. Whitaker also clears inherited `RUSTFLAGS` before its preflight.
-    The `interrogate` step runs `interrogate` 1.7.0 through `uv tool run`,
-    scans `tools` recursively subject to its default exclusions, and fails on
+    The `interrogate` step runs `interrogate` 1.7.0 through the vendored
+    `scripts/uv_gate.py` helper (`uv_gate tool`, offline first, which needs
+    `python3` 3.9 or newer on `PATH`),
+    scans `scripts` and `tools` recursively subject to its default exclusions,
+    and fails on
     any `MISSED` row. Documentation warnings, Clippy warnings, Whitaker
     findings, and undocumented Python definitions that `interrogate` scans fail
     the command. `make all` runs formatting, linting, testing, and spelling in
