@@ -141,7 +141,8 @@ INTERROGATE_FLAGS ?= -vv --fail-under 100
 # which cleans the environment, uses the global uv cache, runs offline first and
 # goes online at most once. The builder runs directly at its release tag,
 # because the spelling baseline requires that form and the helper accepts only
-# a full commit. See
+# a full commit. The helper finds `uv` on the cleaned `PATH` and needs python3
+# 3.9 or later; there is no `UV` override. See
 # https://github.com/leynos/shared-actions/tree/main/uv_gate for the contract.
 # `scripts/uv_gate.py` is the shared-actions helper, vendored byte for byte, so
 # update it by copying the canonical file, never by editing it here.
