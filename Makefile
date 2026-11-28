@@ -132,7 +132,7 @@ lint: yamllint actionlint ## Run rustdoc, Clippy, then Whitaker sequentially
 
 # Interrogate scans each target recursively, subject to its default exclusions.
 INTERROGATE_VERSION ?= 1.7.0
-INTERROGATE_TARGETS ?= tools
+INTERROGATE_TARGETS ?= scripts tools
 # Level 2 prints a MISSED row per undocumented definition, which the
 # `interrogate` recipe below looks for: the rounded percentage alone can pass a
 # lone gap.
