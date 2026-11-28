@@ -118,6 +118,42 @@ fn route_rejects_step_mutations() {
     rejects_changed_route(&original, &changed_command, "changed lint command");
 }
 
+/// Dependent steps must keep their order and appear once each.
+#[test]
+fn route_rejects_broken_step_dependencies() {
+    let original = committed_ci().expect("parse committed CI workflow");
+    let position = |ci: &Value, name: &str| {
+        let mut copy = ci.clone();
+        let steps = route_steps_mut(&mut copy).expect("the committed steps must be a sequence");
+        steps
+            .iter()
+            .position(|step| step.get("name").and_then(Value::as_str) == Some(name))
+            .unwrap_or_else(|| panic!("the committed workflow must contain {name}"))
+    };
+
+    for (first, second, reason) in [
+        ("Install mdtablefix", "Format", "Format before mdtablefix"),
+        ("Setup uv", "Check spelling", "spelling before uv setup"),
+    ] {
+        let mut swapped = original.clone();
+        route_steps_mut(&mut swapped)
+            .expect("the committed steps must be a sequence")
+            .swap(position(&original, first), position(&original, second));
+        rejects_changed_route(&original, &swapped, reason);
+    }
+
+    let mut lint_twice = original.clone();
+    let lint = position(&original, "Lint");
+    let installer = position(&original, "Install the YAML lint tools");
+    let steps = route_steps_mut(&mut lint_twice).expect("the committed steps must be a sequence");
+    let duplicate = steps
+        .get(lint)
+        .cloned()
+        .expect("the Lint step index must exist");
+    steps.insert(installer, duplicate);
+    rejects_changed_route(&original, &lint_twice, "a Lint step before the installer");
+}
+
 /// Disabled jobs, defaults, and suppressed failures remain rejected.
 #[test]
 fn route_rejects_execution_policy_mutations() {
